@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: n8n-api
+spec:
+  template:
+    spec:
+      containers:
+      - name: n8n-api
+        envFrom:
+        - configMapRef:
+            name: dev-n8n-config
+        - secretRef:
+            name: dev-n8n-secrets
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: n8n-worker
+spec:
+  template:
+    spec:
+      containers:
+      - name: n8n-worker
+        envFrom:
+        - configMapRef:
+            name: dev-n8n-config
+        - secretRef:
+            name: dev-n8n-secrets
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgresql
+spec:
+  template:
+    spec:
+      containers:
+      - name: postgresql
+        env:
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: dev-n8n-secrets
+              key: DB_POSTGRESDB_USER
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: dev-n8n-secrets
+              key: DB_POSTGRESDB_PASSWORD

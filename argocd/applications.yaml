@@ -1,0 +1,62 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: n8n-dev
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/samychakrouni/scaling-n8n.git'
+    targetRevision: develop
+    path: k8s/overlays/dev
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: n8n-dev
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: n8n-staging
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/samychakrouni/scaling-n8n.git'
+    targetRevision: main
+    path: k8s/overlays/staging
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: n8n-staging
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: n8n-prod
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/samychakrouni/scaling-n8n.git'
+    targetRevision: main
+    path: k8s/overlays/prod
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: n8n-prod
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true

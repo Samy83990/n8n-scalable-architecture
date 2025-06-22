@@ -1,0 +1,77 @@
+stages:
+  - test
+  - build
+  - deploy
+
+variables:
+  DOCKER_REGISTRY: ${CI_REGISTRY}
+  IMAGE_NAME: ${CI_REGISTRY_IMAGE}
+  IMAGE_TAG: ${CI_COMMIT_SHA}
+
+test:
+  stage: test
+  image: node:16-alpine
+  script:
+    - echo "Exécution des tests"
+    # - npm ci
+    # - npm test
+  only:
+    - merge_requests
+    - main
+    - develop
+
+build:
+  stage: build
+  image: docker:20
+  services:
+    - docker:20-dind
+  script:
+    - echo "${CI_REGISTRY_PASSWORD}" | docker login -u "${CI_REGISTRY_USER}" --password-stdin ${CI_REGISTRY}
+    - docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .
+    - docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${IMAGE_NAME}:latest
+    - docker push ${IMAGE_NAME}:${IMAGE_TAG}
+    - docker push ${IMAGE_NAME}:latest
+  only:
+    - main
+    - develop
+
+deploy-dev:
+  stage: deploy
+  image: bitnami/kubectl:latest
+  script:
+    - kubectl config use-context dev
+    - cd k8s/overlays/dev
+    - kustomize edit set image n8nio/n8n=${IMAGE_NAME}:${IMAGE_TAG}
+    - kubectl apply -k .
+  environment:
+    name: development
+  only:
+    - develop
+
+deploy-staging:
+  stage: deploy
+  image: bitnami/kubectl:latest
+  script:
+    - kubectl config use-context staging
+    - cd k8s/overlays/staging
+    - kustomize edit set image n8nio/n8n=${IMAGE_NAME}:${IMAGE_TAG}
+    - kubectl apply -k .
+  environment:
+    name: staging
+  only:
+    - main
+  when: manual
+
+deploy-prod:
+  stage: deploy
+  image: bitnami/kubectl:latest
+  script:
+    - kubectl config use-context prod
+    - cd k8s/overlays/prod
+    - kustomize edit set image n8nio/n8n=${IMAGE_NAME}:${IMAGE_TAG}
+    - kubectl apply -k .
+  environment:
+    name: production
+  only:
+    - main
+  when: manual

@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: n8n-config
+data:
+  N8N_LOG_LEVEL: "info"
+  N8N_METRICS: "true"
+  WEBHOOK_URL: "https://n8n.example.com/"
+  EXECUTIONS_MODE: "queue"
+  QUEUE_BULL_PREFIX: "n8n"
+  QUEUE_BULL_REDIS_DB: "0"
+  DB_TYPE: "postgresdb"
+  DB_POSTGRESDB_DATABASE: "n8n"
+  DB_POSTGRESDB_HOST: "postgresql"
+  DB_POSTGRESDB_PORT: "5432"
+  QUEUE_BULL_REDIS_HOST: "redis"
+  QUEUE_BULL_REDIS_PORT: "6379"

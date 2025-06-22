@@ -1,0 +1,25 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: n8n-dev
+namePrefix: dev-
+
+bases:
+  - ../../base
+
+resources:
+  - namespace.yaml
+
+patchesStrategicMerge:
+  - patch-configmap.yaml
+  - patch-references.yaml
+
+images:
+  - name: n8nio/n8n
+    newTag: latest
+
+replicas:
+  - name: n8n-api
+    count: 1
+  - name: n8n-worker
+    count: 2

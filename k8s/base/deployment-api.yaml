@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: n8n-api
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: n8n-api
+  template:
+    metadata:
+      labels:
+        app: n8n-api
+    spec:
+      containers:
+      - name: n8n-api
+        image: n8nio/n8n:latest
+        args: ["start"]
+        ports:
+        - containerPort: 5678
+        envFrom:
+        - configMapRef:
+            name: n8n-config
+        - secretRef:
+            name: n8n-secrets
+        env:
+        - name: N8N_BASIC_AUTH_ACTIVE
+          value: "true"
+        - name: N8N_DIAGNOSTICS_ENABLED
+          value: "true"
+        - name: N8N_HIRING_BANNER_ENABLED
+          value: "false"
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "200m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 5678
+          initialDelaySeconds: 30
+          periodSeconds: 15
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 5678
+          initialDelaySeconds: 10
+          periodSeconds: 10
