@@ -71,8 +71,8 @@ On installe une base PostgreSQL, soit en service cloud (RDS, GCP…), soit sur K
 
 ```bash
 helm install postgres oci://registry-1.docker.io/bitnamicharts/postgresql \
---set global.postgresql.auth.postgresPassword=myPassword \
---set primary.persistence.enabled=true
+  --set global.postgresql.auth.postgresPassword=myPassword \
+  --set primary.persistence.enabled=true
 ```
 
 À savoir : PostgreSQL sert à sauvegarder tous tes workflows, utilisateurs, logs...
@@ -122,14 +122,16 @@ metadata:
   name: n8n-api
 spec:
   replicas: 2
-  ...
+  # ...
 ---
 kind: Deployment
 metadata:
   name: n8n-worker
 spec:
   replicas: 3
-  ...
+  # ...
+```
+
 ### 4.6. GitOps et ArgoCD
 
 But : tout ce qui concerne la configuration/déploiement doit être versionné (dans Git), validé et déployé automatiquement.
@@ -144,12 +146,12 @@ Automatise ce qui peut l’être : build, tests, déploiement...
 
 Pipeline typique :
 
-On pousse une modification du workflow (ou config),
-Build de l’image Docker,
-Push sur un registre,
-Mise à jour des manifests Kubernetes,
-ArgoCD applique la modification,
-Notification de succès/échec.
+- On pousse une modification du workflow (ou config),
+- Build de l’image Docker,
+- Push sur un registre,
+- Mise à jour des manifests Kubernetes,
+- ArgoCD applique la modification,
+- Notification de succès/échec.
 
 Tout est régi par des “pipelines” qui évitent les erreurs manuelles !
 
@@ -206,27 +208,28 @@ update-manifest:
     - git push origin HEAD:main
   only:
     - main
+```
 
 ## 6. Gestion des environnements multiples
 
-Namespace Kubernetes par env : dev, staging, prod.
-Configurations spécifiques par environnement (values-dev.yaml, values-prod.yaml, …).
-Séparation stricte pour éviter qu’un bug en dev n’impacte la prod.
-CI/CD et GitOps : chaque branche ou chaque “PR” déclenche un déploiement dans le bon environnement.
+- Namespace Kubernetes par env : dev, staging, prod.
+- Configurations spécifiques par environnement (values-dev.yaml, values-prod.yaml, …).
+- Séparation stricte pour éviter qu’un bug en dev n’impacte la prod.
+- CI/CD et GitOps : chaque branche ou chaque “PR” déclenche un déploiement dans le bon environnement.
 
 ## 7. Sécurité (vulgarisée)
 
-Authentification obligatoire : on protège même l’environnement de dev.
-TLS/HTTPS partout pour éviter que des mots de passe voyagent en clair.
-Secrets : toujours dans Kubernetes, jamais dans le dépôt git.
-Limiter les droits d’accès : chaque service/pod n’a que ce qu’il doit avoir.
+- Authentification obligatoire : on protège même l’environnement de dev.
+- TLS/HTTPS partout pour éviter que des mots de passe voyagent en clair.
+- Secrets : toujours dans Kubernetes, jamais dans le dépôt git.
+- Limiter les droits d’accès : chaque service/pod n’a que ce qu’il doit avoir.
 
 ## 8. Monitoring, logs, maintenance
 
-Prometheus : récupère comment chaque service “se sent” (mémoire, CPU, erreurs…).
-Grafana : affichage de tout cela en graphiques (pas obligatoire).
-Backups réguliers de la base PostgreSQL.
-Logs centralisés pour retrouver qui a fait quoi, et réagir en cas de bug.
+- Prometheus : récupère comment chaque service “se sent” (mémoire, CPU, erreurs…).
+- Grafana : affichage de tout cela en graphiques (pas obligatoire).
+- Backups réguliers de la base PostgreSQL.
+- Logs centralisés pour retrouver qui a fait quoi, et réagir en cas de bug.
 
 ## 9. Conclusion : résumé et intérêt
 
@@ -264,10 +267,13 @@ kubectl logs -n n8n-dev -l app=n8n-worker | grep "Host ID" || echo "Aucun ID d'h
 
 # Voir uniquement les exécutions de workflows
 kubectl logs -n n8n-dev -l app=n8n-worker -f | grep -i "executing" || grep -i "workflow"
+```
 
-10.3. Vérifier la résilience du système
+### 10.3. Vérifier la résilience du système
+
 Pour tester que le système continue à fonctionner même en cas de défaillance :
 
+```bash
 # 1. Dans un terminal, observez les logs des workers
 kubectl logs -n n8n-dev -l app=n8n-worker -f
 
@@ -278,12 +284,13 @@ kubectl delete pod -n n8n-dev $(kubectl get pods -n n8n-dev -l app=n8n-worker -o
 #   - Les workflows continuent à s'exécuter sur l'autre worker
 #   - Un nouveau pod worker est automatiquement créé
 kubectl get pods -n n8n-dev -w
+```
 
 Votre architecture n8n est correctement scalable si :
 
-✅ Les workflows s'exécutent en parallèle sur différents workers
-✅ Quand un worker tombe en panne, les autres continuent à traiter les tâches
-✅ Kubernetes recrée automatiquement le worker manquant
-✅ La base de données PostgreSQL et Redis sont stables sous charge
+✅ Les workflows s'exécutent en parallèle sur différents workers  
+✅ Quand un worker tombe en panne, les autres continuent à traiter les tâches  
+✅ Kubernetes recrée automatiquement le worker manquant  
+✅ La base de données PostgreSQL et Redis sont stables sous charge  
 
-Toutes ces observations confirment que votre déploiement n8n est robuste, résilient et prêt pour une utilisation en production.
+Toutes ces observations confirment que votre déploiement n8n est robuste, résilient et prêt pour une utilisation en production!
