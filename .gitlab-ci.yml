@@ -88,9 +88,10 @@ auto-push-main:
     - ssh-keyscan github.com >> ~/.ssh/known_hosts
     - git config --global user.email "ci@example.com"
     - git config --global user.name "Samy83990"
-    - git remote set-url origin git@github.com:Samy83990/n8n-scalable-architecture.git
   script:
-    - git checkout main
+    - git fetch origin main || git checkout -b main
+    - git checkout main || git checkout -b main
+    - git remote set-url origin git@github.com:Samy83990/n8n-scalable-architecture.git
     - git add .
     - |
       if ! git diff --cached --quiet; then
