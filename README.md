@@ -294,3 +294,26 @@ Votre architecture n8n est correctement scalable si :
 ✅ La base de données PostgreSQL et Redis sont stables sous charge  
 
 Toutes ces observations confirment que votre déploiement n8n est robuste, résilient et prêt pour une utilisation en production!
+
+---
+
+## Cloner ou forker le dépôt GitHub
+
+Pour récupérer le code et l’architecture n8n :
+
+### Cloner en lecture seule
+
+```bash
+git clone https://github.com/Samy83990/n8n-scalable-architecture.git
+```
+
+### Forker pour travailler sur votre propre version
+
+1. Rendez-vous sur la page du dépôt :  
+<https://github.com/Samy83990/n8n-scalable-architecture>
+2. Cliquez sur le bouton **Fork** (en haut à droite).
+3. Clonez ensuite votre fork :
+
+```bash
+git clone https://github.com/<votre-utilisateur>/n8n-scalable-architecture.git
+```
