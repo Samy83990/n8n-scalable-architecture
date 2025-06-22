@@ -91,7 +91,10 @@ auto-push-main:
   script:
     - git checkout main
     - git add .
-    - git diff --cached --quiet || git commit -m "[CI] Auto-push: sync all changes from pipeline"
+    - |
+      if ! git diff --cached --quiet; then
+        git commit -m "[CI] Auto-push: sync all changes from pipeline"
+      fi
     - git push origin main
   only:
     - main
