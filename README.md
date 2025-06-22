@@ -286,6 +286,58 @@ kubectl delete pod -n n8n-dev $(kubectl get pods -n n8n-dev -l app=n8n-worker -o
 kubectl get pods -n n8n-dev -w
 ```
 
+## 11. Monitoring avancé : Prometheus & Grafana
+
+### Pourquoi utiliser Prometheus et Grafana ?
+
+- **Prometheus** collecte automatiquement les métriques de tous les composants Kubernetes (CPU, RAM, pods, nodes, services, etc.) et des applications qui exposent un endpoint `/metrics` (comme n8n).
+- **Grafana** permet de visualiser ces métriques sous forme de dashboards interactifs, d’alertes et de graphiques personnalisés.
+- Cela permet de :
+  - Surveiller la santé du cluster et des applications
+  - Détecter les anomalies ou surcharges
+  - Analyser les performances et l’utilisation des ressources
+  - Créer des alertes (mail, Slack, etc.) en cas de problème
+
+### Installation rapide sur Kubernetes (avec Helm)
+
+```bash
+# Ajouter les repositories Helm
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo add grafana https://grafana.github.io/helm-charts
+helm repo update
+
+# Installer Prometheus + Grafana (stack complète)
+helm install prometheus prometheus-community/kube-prometheus-stack --namespace monitoring --create-namespace
+```
+
+### Accéder à Grafana
+
+```bash
+kubectl -n monitoring port-forward svc/prometheus-grafana 3000:80
+```
+
+Puis ouvre [http://localhost:3000](http://localhost:3000) dans ton navigateur.
+
+Pour récupérer le mot de passe admin Grafana :
+
+```bash
+kubectl -n monitoring get secrets prometheus-grafana -o jsonpath="{.data.admin-password}" | base64 -d ; echo
+```
+
+Login : `admin`
+
+### Utilisation de base
+
+- Des dashboards Kubernetes et Prometheus sont déjà présents dans Grafana (menu “Dashboards” > “Browse”).
+- Pour explorer les métriques : menu “Explore”, choisis la source “Prometheus” et tape une requête (ex : `up`, `kube_pod_container_status_ready`, etc.).
+- Pour monitorer n8n, assure-toi que l’option `N8N_METRICS=true` est activée (déjà dans la config) et ajoute un dashboard n8n (import ou création manuelle).
+
+### Aller plus loin
+
+- Tu peux importer des dashboards depuis [grafana.com/dashboards](https://grafana.com/grafana/dashboards/)
+- Pour monitorer n8n précisément, ajoute un ServiceMonitor ou PodMonitor pour que Prometheus scrape l’endpoint `/metrics` de n8n.
+- Personnalise les alertes et notifications selon tes besoins.
+
 Votre architecture n8n est correctement scalable si :
 
 ✅ Les workflows s'exécutent en parallèle sur différents workers  
@@ -317,3 +369,5 @@ git clone https://github.com/Samy83990/n8n-scalable-architecture.git
 ```bash
 git clone https://github.com/<votre-utilisateur>/n8n-scalable-architecture.git
 ```
+
+---
