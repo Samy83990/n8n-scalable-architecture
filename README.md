@@ -310,7 +310,7 @@ helm repo update
 helm install prometheus prometheus-community/kube-prometheus-stack --namespace monitoring --create-namespace
 ```
 
-### Accéder à Grafana
+### Accédé à Grafana
 
 ```bash
 kubectl -n monitoring port-forward svc/prometheus-grafana 3000:80
@@ -332,7 +332,7 @@ Login : `admin`
 - Pour explorer les métriques : menu “Explore”, choisis la source “Prometheus” et tape une requête (ex : `up`, `kube_pod_container_status_ready`, etc.).
 - Pour monitorer n8n, assure-toi que l’option `N8N_METRICS=true` est activée (déjà dans la config) et ajoute un dashboard n8n (import ou création manuelle).
 
-### Aller plus loin
+### Allé plus loin ! 
 
 - Tu peux importer des dashboards depuis [grafana.com/dashboards](https://grafana.com/grafana/dashboards/)
 - Pour monitorer n8n précisément, ajoute un ServiceMonitor ou PodMonitor pour que Prometheus scrape l’endpoint `/metrics` de n8n.
@@ -349,17 +349,29 @@ Toutes ces observations confirment que votre déploiement n8n est robuste, rési
 
 ---
 
+## Politique d’accès et de contribution
+
+- **GitLab** est le dépôt principal : toutes les modifications, issues et merge requests doivent être faites sur GitLab ([lien du dépôt GitLab](https://gitlab.com/Samy83-group/n8n-scalable-architecture)).
+- **GitHub** est un miroir en lecture seule, synchronisé automatiquement depuis GitLab.  
+  Il sert à :
+  - permettre aux étudiants de cloner ou forker le code facilement,
+  - donner de la visibilité open source.
+- **Ne faites jamais de modification directe sur GitHub** : toute modification doit être poussée sur GitLab pour garantir la cohérence et la synchronisation automatique.
+- En cas de divergence d’historique, le dépôt GitHub sera écrasé par celui de GitLab lors du prochain mirroring.
+
+---
+
 ## Cloner ou forker le dépôt GitHub
 
 Pour récupérer le code et l’architecture n8n :
 
-### Cloner en lecture seule
+### Cloner en lecture seul
 
 ```bash
 git clone https://github.com/Samy83990/n8n-scalable-architecture.git
 ```
 
-### Forker pour travailler sur votre propre version
+### Forker pour travailler sur votre propre versions
 
 1. Rendez-vous sur la page du dépôt :  
 <https://github.com/Samy83990/n8n-scalable-architecture>
