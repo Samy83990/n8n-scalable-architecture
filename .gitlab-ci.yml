@@ -3,6 +3,7 @@ stages:
   - build
   - deploy
   - post-deploy
+  - mirror
 
 variables:
   DOCKER_REGISTRY: ${CI_REGISTRY}
@@ -99,5 +100,24 @@ auto-push-main:
     - main
     - develop
     - merge_requests
+  except:
+    - tags
+
+mirror-to-github:
+  stage: mirror
+  image: alpine/git:latest
+  before_script:
+    - apk add --no-cache openssh
+    - mkdir -p ~/.ssh
+    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - ssh-keyscan github.com >> ~/.ssh/known_hosts
+    - git config --global user.email "ci@example.com"
+    - git config --global user.name "Samy83990"
+  script:
+    - git remote add github git@github.com:Samy83990/n8n-scalable-architecture.git || git remote set-url github git@github.com:Samy83990/n8n-scalable-architecture.git
+    - git push --mirror github
+  only:
+    - main
   except:
     - tags
