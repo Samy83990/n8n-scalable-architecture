@@ -93,10 +93,7 @@ auto-push-main:
     - git checkout main || git checkout -b main
     - git remote set-url origin git@github.com:Samy83990/n8n-scalable-architecture.git
     - git add .
-    - |
-      if ! git diff --cached --quiet; then
-        git commit -m "[CI] Auto-push: sync all changes from pipeline"
-      fi
+    - '[ "$(git diff --cached --quiet; echo $?)" -ne 0 ] && git commit -m "[CI] Auto-push: sync all changes from pipeline" || echo "No changes to commit"'
     - git push origin main
   only:
     - main
