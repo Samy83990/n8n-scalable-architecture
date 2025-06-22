@@ -1,5 +1,10 @@
 FROM n8nio/n8n:latest
 
+# Métadonnées de l'image professionnelle
+LABEL maintainer="DevOps Team"
+LABEL description="n8n Scalable Architecture - Enterprise Ready"
+LABEL version="1.0.0"
+
 ENV N8N_METRICS=true \
     N8N_DIAGNOSTICS_ENABLED=true \
     N8N_HIRING_BANNER_ENABLED=false \

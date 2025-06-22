@@ -2,11 +2,10 @@ stages:
   - test
   - build
   - deploy
-  - mirror
 
 variables:
   DOCKER_REGISTRY: ${CI_REGISTRY}
-  IMAGE_NAME: ${CI_REGISTRY_IMAGE}
+  IMAGE_NAME: scalable-n8n/platform
   IMAGE_TAG: ${CI_COMMIT_SHA}
 
 test:
@@ -42,7 +41,7 @@ deploy-dev:
   script:
     - kubectl config use-context dev
     - cd k8s/overlays/dev
-    - kustomize edit set image n8nio/n8n=${IMAGE_NAME}:${IMAGE_TAG}
+    - kustomize edit set image scalable-n8n/platform=${CI_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}
     - kubectl apply -k .
   environment:
     name: development
@@ -55,7 +54,7 @@ deploy-staging:
   script:
     - kubectl config use-context staging
     - cd k8s/overlays/staging
-    - kustomize edit set image n8nio/n8n=${IMAGE_NAME}:${IMAGE_TAG}
+    - kustomize edit set image scalable-n8n/platform=${CI_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}
     - kubectl apply -k .
   environment:
     name: staging
@@ -69,29 +68,10 @@ deploy-prod:
   script:
     - kubectl config use-context prod
     - cd k8s/overlays/prod
-    - kustomize edit set image n8nio/n8n=${IMAGE_NAME}:${IMAGE_TAG}
+    - kustomize edit set image scalable-n8n/platform=${CI_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}
     - kubectl apply -k .
   environment:
     name: production
   only:
     - main
   when: manual
-
-mirror-to-github:
-  stage: mirror
-  image: alpine/git:latest
-  before_script:
-    - apk add --no-cache openssh
-    - mkdir -p ~/.ssh
-    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
-    - chmod 600 ~/.ssh/id_rsa
-    - ssh-keyscan github.com >> ~/.ssh/known_hosts
-    - git config --global user.email "ci@example.com"
-    - git config --global user.name "Samy83990"
-  script:
-    - git remote add github git@github.com:Samy83990/n8n-scalable-architecture.git || git remote set-url github git@github.com:Samy83990/n8n-scalable-architecture.git
-    - git push --mirror github
-  only:
-    - main
-  except:
-    - tags

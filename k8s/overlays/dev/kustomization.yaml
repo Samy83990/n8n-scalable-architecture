@@ -15,7 +15,7 @@ patchesStrategicMerge:
   - patch-references.yaml
 
 images:
-  - name: n8nio/n8n
+  - name: scalable-n8n/platform
     newTag: latest
 
 replicas:
