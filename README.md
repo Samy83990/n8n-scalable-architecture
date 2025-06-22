@@ -41,13 +41,11 @@ L'architecture vise à répondre aux besoins :
 ### Composants
 
 - **Load Balancer** : "Gardien du portail" qui répartit les requêtes entre plusieurs serveurs n8n.  
-- **Pods n8n API** : Le "cerveau", ils reçoivent les demandes, lancent les workflows.  
+- **Pods n8n API** : Le "cerveau", il reçoivent les demandes, lancent les workflow.  
 - **Pods n8n Worker** : Ce sont "les bras" : ils exécutent les étapes lourdes des workflows, ce qui évite de bloquer le cerveau.  
-- **PostgreSQL** : La "mémoire" : tout l'historique, la config, les workflows sont stockés là.  
+- **PostgreSQL** : La "mémoire" : tout l'historique, la config, les workflow sont stockés là.  
 - **Redis (queue)** : "La file d'attente" qui organise les tâches à traiter : permet que les workers les prennent dans l'ordre, évite les collisions.  
 - **Monitoring (Prometheus, Grafana)** : "Tableau de bord", pour surveiller si tout va bien, réagir vite si soucis.
-
-## 4. Test de Scalabilité : Guide Complet avec Captures d'Écran
 
 Cette section présente un guide étape par étape pour tester et valider la scalabilité de l'architecture n8n.
 
@@ -237,16 +235,6 @@ kubectl delete namespace n8n-dev
 pkill -f "port-forward"
 ```
 
-### 4.8. Captures d'Écran Recommandées
-
-Pour documenter les tests, prendre des captures de :
-
-1. **Interface n8n** avec les 3 workflows créés et actifs
-2. **Terminal avec logs des workers** montrant la répartition
-3. **Commande `kubectl get pods`** avant et après suppression d'un worker
-4. **Commande `kubectl top pods`** montrant l'utilisation des ressources
-5. **Graphique Grafana** (si monitoring installé) des métriques
-
 ### 4.9. Troubleshooting
 
 **Problèmes courants :**
@@ -301,14 +289,6 @@ F --> G(Deploiement Kubernetes)
 - Grafana : affichage de tout cela en graphiques (pas obligatoire).
 - Backups réguliers de la base PostgreSQL.
 - Logs centralisés pour retrouver qui a fait quoi, et réagir en cas de bug.
-
-## 9. Conclusion : résumé et intérêt
-
-Rendre scalable n8n = permettre à beaucoup de workflows de tourner, pour de nombreux utilisateurs, sans crainte de plantage et avec la possibilité de grandir !
-
-Séparation dev/staging/prod, CI/CD & GitOps = confiance, sécurité, collaboration, historique des modifications, rollback faciles.
-
-Objectif : Comprendre comment déployer une application professionnelle de manière robuste, apprendre à industrialiser un projet, assurer qualité et résilience, tout en gardant de la souplesse pour innover ou corriger.
 
 ## 10. Vérification de la scalabilité
 
@@ -365,3 +345,11 @@ Votre architecture n8n est correctement scalable si :
 ✅ La base de données PostgreSQL et Redis sont stables sous charge
 
 Toutes ces observations confirment que votre déploiement n8n est robuste, résilient et prêt pour une utilisation en production.
+
+## 9. Conclusion : résumé et intérêt
+
+Rendre scalable n8n = permettre à beaucoup de workflows de tourner, pour de nombreux utilisateurs, sans crainte de plantage et avec la possibilité de grandir !
+
+Séparation dev/staging/prod, CI/CD & GitOps = confiance, sécurité, collaboration, historique des modifications, rollback faciles.
+
+Objectif : Comprendre comment déployer une application professionnelle de manière robuste, apprendre à industrialiser un projet, assurer qualité et résilience, tout en gardant de la souplesse pour innover ou corriger.

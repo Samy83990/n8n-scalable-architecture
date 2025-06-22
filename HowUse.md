@@ -29,13 +29,10 @@ Valider que l'architecture n8n est capable de :
 kubectl apply -k k8s/overlays/dev/
 kubectl get pods -n n8n-dev
 
-```**Screenshot**: Terminal montrant tous les pods `Running`
-
 ### 2. Interface n8n
 ```bash
 kubectl port-forward -n n8n-dev svc/dev-n8n-api 8080:80
 
-```**Screenshot**: Interface n8n sur http://localhost:8080
 
 ### 3. Workflows de Test
 Créer dans l'interface n8n :
@@ -43,7 +40,6 @@ Créer dans l'interface n8n :
 - Workflow 2: Schedule (20s) + Data Processing
 - Workflow 3: Schedule (30s) + API Calls
 
-**Screenshot**: Liste des workflows actifs
 
 ### 4. Distribution de Charge
 ```bash
@@ -59,7 +55,6 @@ kubectl delete pod -n n8n-dev $(kubectl get pods -n n8n-dev -l app=n8n-worker -o
 # Observer la récupération
 kubectl get pods -n n8n-dev -w
 
-```**Screenshot**: Avant/après suppression d'un pod
 
 ### 6. Montée en Charge
 
@@ -67,19 +62,16 @@ kubectl get pods -n n8n-dev -w
 kubectl scale deployment dev-n8n-worker --replicas=5 -n n8n-dev
 kubectl get pods -n n8n-dev
 
-```**Screenshot**: Passage de 2 à 5 workers
 
 ### 7. Métriques de Performance
 
 ```bash
 kubectl top pods -n n8n-dev ```
-**Screenshot**: Utilisation CPU/RAM des pods
 
 ### 8. Validation Finale
 
 Interface n8n → Executions
 
-**Screenshot**: Historique des exécutions réussies
 
 ## 🔧 Commandes Utiles
 
