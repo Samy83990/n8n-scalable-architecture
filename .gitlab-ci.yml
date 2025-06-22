@@ -75,3 +75,27 @@ deploy-prod:
   only:
     - main
   when: manual
+
+auto-push-main:
+  stage: deploy
+  image: alpine/git:latest
+  before_script:
+    - apk add --no-cache openssh
+    - mkdir -p ~/.ssh
+    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - ssh-keyscan github.com >> ~/.ssh/known_hosts
+    - git config --global user.email "ci@example.com"
+    - git config --global user.name "Samy83990"
+    - git remote set-url origin git@github.com:Samy83990/n8n-scalable-architecture.git
+  script:
+    - git checkout main
+    - git add .
+    - git diff --cached --quiet || git commit -m "[CI] Auto-push: sync all changes from pipeline"
+    - git push origin main
+  only:
+    - main
+    - develop
+    - merge_requests
+  except:
+    - tags
